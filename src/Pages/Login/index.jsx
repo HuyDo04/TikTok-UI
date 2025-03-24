@@ -39,6 +39,7 @@ function Login() {
 
   return (
     <form action="" onSubmit={handleSubmit}>
+      <label htmlFor="">Email</label>
       <input
         type="text"
         name="email"
@@ -49,6 +50,7 @@ function Login() {
         }}
       />
       <br />
+      <label htmlFor="">Password</label>
       <input
         type="password"
         name="password"

@@ -63,7 +63,7 @@ function Register() {
           setErrors(data.errors);
           return;
         }
-
+        alert("Đăng kí thành công..");
         localStorage.setItem("token", data.access_token);
         navigate("/");
       })
