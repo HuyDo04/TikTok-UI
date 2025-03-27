@@ -3,6 +3,7 @@ const config = {
         home : "/",
         //product
         products : "/products",
+        productDetail:"/products/:id",
         //auth
         login : "/login",
         register : "/register",

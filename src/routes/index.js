@@ -9,6 +9,7 @@ import Register from "../Pages/Register";
 import User from "../Pages/User";
 import NoHeaderLayout from "@/component/layouts/NoHeaderLayout";
 import Profile from "@/Pages/Profile";
+import ProductDetail from "@/Pages/ProductDetail";
 
 const routes = [
     {
@@ -24,6 +25,10 @@ const routes = [
         path: config.routes.products,
         component: Products,
         layout: AdminLayout
+    },
+    {
+        path: config.routes.productDetail,
+        component: ProductDetail,
     },
     {   
         path: config.routes.login,

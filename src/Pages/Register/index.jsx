@@ -1,3 +1,4 @@
+import { register } from "@/service/authService";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +21,7 @@ function Register() {
     return [firstName, lastName];
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
 
@@ -36,53 +37,40 @@ function Register() {
       return;
     }
 
-    // data
-    const requestData = {
-      firstName,
-      lastName,
-      email,
-      password,
-      password_confirmation: confirmPassword,
-    };
-
-    fetch("https://api01.f8team.dev/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestData),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((errorData) => {
-            throw errorData;
-          });
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.errors) {
-          setErrors(data.errors);
-          return;
-        }
-        alert("Đăng kí thành công..");
-        localStorage.setItem("token", data.access_token);
-        navigate("/");
-      })
-      .catch((error) => {
-        console.log(error);
-        const errorMessage = error.error || error.message || "";
-
-        if (error.errors) {
-          setErrors(error.errors);
-        } else if (errorMessage.includes("users_email_unique")) {
-          setErrors({ email: "Email này đã được sử dụng." });
-        } else if (errorMessage.includes("users_username_unique")) {
-          setErrors({
-            fullname: "Tên người dùng đã được sử dụng. Vui lòng chọn tên khác.",
-          });
-        } else {
-          setErrors({ prinfError: "Có lỗi xảy ra. Vui lòng thử lại sau." });
-        }
+    try {
+      const data = await register({
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
       });
+      if (data.errors) {
+        setErrors(data.error);
+        return;
+      }
+      alert("Đăng ký thành công.");
+      localStorage.setItem("token", data.access_token);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+      const errorMessage = error.error || error.message || "";
+
+      if (error.errors) {
+        setErrors(error.errors);
+      } else if (errorMessage.includes("users_username_unique")) {
+        setErrors({
+          fullname: "Tên người dùng đã được sử dụng. Vui lòng chọn tên khác.",
+        });
+      } else if (
+        errorMessage.includes("users_email_unique") ||
+        errorMessage.includes("email")
+      ) {
+        setErrors({ email: "Email này đã được sử dụng." });
+      } else {
+        setErrors({ prinfError: "Có lỗi xảy ra. Vui lòng thử lại sau." });
+      }
+    }
   };
 
   return (

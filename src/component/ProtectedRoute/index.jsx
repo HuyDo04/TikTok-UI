@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import config from "@/config";
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import authService from "@/service/authService";
 
 function ProtectedRoute({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
@@ -10,21 +11,15 @@ function ProtectedRoute({ children }) {
   const location = useLocation();
   useEffect(() => {
     setLoading(true);
-    fetch("https://api01.f8team.dev/api/auth/me", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then((data) => {
+    (async () => {
+      try {
+        const data = await authService.getCurrentUser();
         setCurrentUser(data.user);
-      })
-      .finally(() => setLoading(false));
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   if (loading) {

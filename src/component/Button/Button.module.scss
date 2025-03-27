@@ -1,0 +1,46 @@
+.wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 120px;
+    min-height: 34px;
+    border: none;
+    outline: none;
+    padding: 8px 16px;
+    background: #ccc;
+    color: inherit;
+    text-decoration: none;
+    user-select: none;
+}
+
+.primary {
+    background: orange;
+}
+
+.secondary {
+    background: greenyellow;
+}
+
+.rounded {
+    border-radius: 99px;
+}
+
+.disabled {
+    opacity: 0.5;
+}
+
+.small {
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+.medium {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+.large {
+    font-size: 16px;
+    padding: 10px 20px;
+}

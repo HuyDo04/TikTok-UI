@@ -1,5 +1,12 @@
+import { Outlet } from "react-router-dom";
+
 function AdminLayout() {
-  return <h1>AdminLayout</h1>;
+  return (
+    <>
+      <Outlet />
+      <h1>AdminLayout</h1>
+    </>
+  );
 }
 
 export default AdminLayout;
