@@ -10,6 +10,9 @@ import User from "../Pages/User";
 import NoHeaderLayout from "@/component/layouts/NoHeaderLayout";
 import Profile from "@/Pages/Profile";
 import ProductDetail from "@/Pages/ProductDetail";
+import Register2 from "@/Pages/Register2";
+import Login2 from "@/Pages/Login2";
+import Edit from "@/Pages/Edit";
 
 const routes = [
     {
@@ -35,13 +38,26 @@ const routes = [
         component: Login,
         layout: NoFooterLayout
     },
+     {   
+        path: config.routes.login2,
+        component: Login2,
+    },
     {
         path: config.routes.register,
         component: Register,
     },
+      {
+        path: config.routes.register2,
+        component: Register2,
+    },
     {
         path: config.routes.profile,
         component: Profile,
+        layout: NoHeaderLayout
+    },
+      {
+        path: config.routes.edit,
+        component: Edit,
         layout: NoHeaderLayout
     },
     {

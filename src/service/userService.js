@@ -9,12 +9,19 @@ export const getAll = async () => {
     return response
 }
 
-export const getOne = async (id) => {
-    const response = await httpRequest.get(`/user/${id}`)
+export const getOne = async (username) => {
+    const response = await httpRequest.get(`/users/${username}`); 
+    return response; 
+};
+
+export const update = async (username, data) => {
+    const response = await httpRequest.patch(`/user/${username}`, data);
     return response
 }
 
 export default {
     getAll,
     getOne,
+    update
 }
+

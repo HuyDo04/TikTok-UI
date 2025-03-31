@@ -6,9 +6,14 @@ const config = {
         productDetail:"/products/:id",
         //auth
         login : "/login",
+        login2 : "/login2",
         register : "/register",
+        register2 : "/register2",
+
+        // user
+        profile:"/profile/:username",
+        edit:"/profile/:username/edit",
         user: "/user",
-        profile:"/profile",
         notFound:"*"
     }
 }

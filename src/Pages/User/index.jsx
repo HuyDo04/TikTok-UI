@@ -17,10 +17,10 @@ function User() {
     <>
       <h1>User Page</h1>
       <ul>
-        {users.map((user) => (
-          <li key={user.id}>
-            <Link to={`${config.routes.user}/${user.slug}`}>
-              {`${user.firstName} ${user.lastName}`}
+        {users.map((u) => (
+          <li key={u.id}>
+            <Link to={`/profile/${u.username}`}>
+              {`${u.firstName} ${u.lastName}`}
             </Link>
           </li>
         ))}

@@ -66,9 +66,19 @@ export const logout = async () => {
     }
 };
 
+export const checkEmail = async (email) => {
+    try {
+        const res = await httpRequest.get(`/auth/check-email?email=${email}`)
+        return res.exists
+    } catch (error) {
+        return false
+    }
+}
+
 export default {
     getCurrentUser,
     register,
     login,
-    logout
+    logout,
+    checkEmail
 }

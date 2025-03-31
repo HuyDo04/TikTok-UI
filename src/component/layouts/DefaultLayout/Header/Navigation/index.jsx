@@ -12,11 +12,17 @@ function Navigation() {
           <li>
             <NavLink to="/products">Products</NavLink>
           </li>
-          <li>
+          {/* <li>
             <NavLink to="/login">Login</NavLink>
-          </li>
+          </li> */}
           <li>
+            <NavLink to="/login2">Login2</NavLink>
+          </li>
+          {/* <li>
             <NavLink to="/register">Register</NavLink>
+          </li> */}
+          <li>
+            <NavLink to="/register2">Register2</NavLink>
           </li>
           <li>
             <NavLink to="/profile">Profile</NavLink>
