@@ -11,8 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
-src/pages/Login/
-src/pages/Register/
+
 
 # Editor directories and files
 .vscode/*
