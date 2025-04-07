@@ -6,11 +6,10 @@ import { Link } from "react-router-dom";
 function User() {
   const [users, setUser] = useState([]);
   useEffect(() => {
-    const handle = async () => {
+    (async () => {
       const user = await userService.getAll();
-      setUser(user);
-    };
-    handle();
+      setUser(user.data);
+    })();
   }, []);
 
   return (

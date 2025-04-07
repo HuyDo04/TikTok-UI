@@ -3,8 +3,8 @@ import { useContext } from "react";
 
 function useUser() {
   const data = useContext(UserContext);
-  console.log(data);
-  if (!data) return {};
+  // console.log(data);
+  // if (!data) return {};
   return data.user;
 }
 

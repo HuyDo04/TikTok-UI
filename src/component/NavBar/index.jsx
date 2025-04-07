@@ -3,6 +3,7 @@ import { BsTiktok } from "react-icons/bs";
 import styles from "./NavBar.module.scss";
 import classNames from "classnames/bind";
 import HandleLogout from "../layouts/DefaultLayout/Header/HandleLogout";
+import { NavLink } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
@@ -30,6 +31,7 @@ function Navbar() {
         <button className={cx("profile-btn")}>
           <FaUser />
         </button>
+        <NavLink to="/users">Users</NavLink>
       </div>
     </nav>
   );

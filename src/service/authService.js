@@ -2,7 +2,7 @@ import * as httpRequest from "@/utils/httpRequest";
 
 export const getCurrentUser = async () => {
     const response = await httpRequest.get("/auth/me")
-    return response.data
+    return response
 }
 
 export const register = async ({ firstName, lastName, email, password, confirmPassword }) => {
@@ -16,7 +16,11 @@ export const register = async ({ firstName, lastName, email, password, confirmPa
   try {
       const response = await httpRequest.post("/auth/register", 
         requestData,
-        )
+        {
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        })
     return response
   } catch (error) {
     // ? tránh lỗi response là undefined
@@ -24,28 +28,26 @@ export const register = async ({ firstName, lastName, email, password, confirmPa
   }
 }
 
-export const login = async (email, password) => {
-    const formData = {
-        email,
-        password
-    }
-   try {
-     const response = await httpRequest.post("/auth/login", 
-        formData)
-    return response.data
-   } catch (error) {
-        throw error
-   }
-}
+
+export const login = async (data) => {
+    const response = await httpRequest.post("auth/login", data);
+    return response;
+};
+
 
 export const logout = async () => {
     const token = localStorage.getItem("token"); 
     if (!token) return
 
     try {
-        const response = await httpRequest.post("/auth/logout");
+        const response = await httpRequest.post("/auth/logout", null, { 
+             headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
         httpRequest.setToken(null);
-        return response.data;
+        return response;
     } catch (error) {
         console.error("Lỗi khi logout:", error);
         throw error.response?.data || error.message;
@@ -55,24 +57,39 @@ export const logout = async () => {
 export const checkEmail = async (email) => {
     try {
         const res = await httpRequest.get(`/auth/check-email?email=${email}`)
-        return res.exists
+        return res.data.exists
     } catch (error) {
         return false
     }
 }
 
-export const verifyToken = async (token) => {
-  try {
-    const response = await httpRequest.get('/auth/verify', {
-      headers: { 
-        Authorization: `Bearer ${token}` 
-      }
-    });
-    return response.data.isValid; 
-  } catch (error) {
-    return false;
-  }
-};
+export const checkEmailUpdate = async (email, id) => {
+    try {
+        const res = await httpRequest.get(`/auth/check-email?email=${email}&exclude_id=${id}`)
+        console.log(res.data.exists)
+        return res.data.exists
+    } catch (error) {
+        return false
+    }
+}
+
+export const checkPhone = async (phone) => {
+    try {
+        const res = await httpRequest.get(`/auth/check-phone?phone=${phone}&exclude_id=${id}`)
+        return res.data.exists
+    } catch (error) {
+        return false
+    }
+}
+
+export const CheckUsername = async (username) => {
+    try {
+        const res = await httpRequest.get(`/auth/check-phone?phone=${username}&exclude_id=${id}`)
+        return res.data.exists
+    } catch (error) {
+        return false
+    }
+}
 
 export default {
     getCurrentUser,
@@ -80,5 +97,7 @@ export default {
     login,
     logout,
     checkEmail,
-    verifyToken
+    checkPhone,
+    CheckUsername,
+    checkEmailUpdate
 }

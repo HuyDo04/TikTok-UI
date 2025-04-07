@@ -12,7 +12,7 @@ function Profile() {
   useEffect(() => {
     async function handle() {
       const res = await userService.getOne(name.username);
-      setProfile(res);
+      setProfile(res.data);
     }
     handle();
   }, [name.username]);
@@ -20,7 +20,7 @@ function Profile() {
   useEffect(() => {
     async function handle() {
       const response = await authService.getCurrentUser();
-      setCurrentUser(response.user);
+      setCurrentUser(response.data);
     }
     handle();
   }, []);
@@ -39,7 +39,7 @@ function Profile() {
       <p>Avatar</p>
       <img src={profile.image || "Avatar"} alt="" width={200} />
       <p>
-        Trạng thái:{" "}
+        Trạng thái:
         {profile.emailVerifiedAt
           ? "Tài khoản đã được xác minh"
           : "Tài khoản chưa xác minh"}

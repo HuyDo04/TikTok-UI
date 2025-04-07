@@ -13,16 +13,18 @@ const send = async (method, url, data, config) => {
     const effectivePath = isPutOrPatch
         ? `${url}${url.includes("?") ? "&" : "?"}_method=${method}`
         : url;
+
     const response = await httpRequest.request({
         method: effectiveMethod,
-        url:effectivePath,
+        url: effectivePath,
         data,
-        ...config
-    })
+        ...config,
+    });
+
     if (response.status >= 200 && response.status < 400) {
         return response.data;
     }
-}
+};
 
 export const get = (url,config) => {
     return send("get", url,null, config)
@@ -49,6 +51,7 @@ export const del = (url,config) => {
 
 export const setToken = (token) => {
   if (token) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     localStorage.setItem("token", token);
   } else {
     localStorage.removeItem("token");

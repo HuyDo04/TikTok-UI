@@ -26,16 +26,17 @@ function Login() {
 
   const onSubmit = async (data) => {
     try {
-      const res = await authService.login(data.email, data.password);
-      alert("Login thành công");
-      httpRequest.setToken(res.access_token);
-      // const data1 = await authService.getCurrentUser();
-      // setUser(data1);
+      const response = await authService.login(data);
+      console.log(response);
+      alert("Đăng nhập thành công");
+      httpRequest.setToken(response.data.access_token);
       navigate(query.get("continue") || config.routes.home);
-    } catch (error) {
-      setError("general", {
+      return response;
+    } catch (errors) {
+      console.log(errors);
+      setError("password", {
         type: "manual",
-        message: "Tài khoản hoặc mật khẩu không chính xác",
+        message: "Tài khoản mật khẩu không chính xác",
       });
     }
   };
