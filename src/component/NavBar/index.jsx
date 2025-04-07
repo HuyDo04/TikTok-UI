@@ -31,7 +31,6 @@ function Navbar() {
         <button className={cx("profile-btn")}>
           <FaUser />
         </button>
-        <NavLink to="/users">Users</NavLink>
       </div>
     </nav>
   );
