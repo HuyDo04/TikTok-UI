@@ -12,14 +12,16 @@
     color: inherit;
     text-decoration: none;
     user-select: none;
+    cursor: pointer;
 }
 
 .primary {
-    background: orange;
+    background-color: rgba(254, 44, 85, 1);
+    color: rgba(255, 255, 255, 1)
 }
 
 .secondary {
-    background: greenyellow;
+    background-color: green;
 }
 
 .rounded {
@@ -36,8 +38,14 @@
 }
 
 .medium {
-    font-size: 14px;
-    padding: 8px 16px;
+    height: 40px;
+    min-width: 108px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 21px;
+    width: 12.5rem;
 }
 
 .large {

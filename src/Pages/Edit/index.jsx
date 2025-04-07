@@ -14,7 +14,7 @@ const schema = yup.object({
     .required("Email không được để trống"),
   gender: yup.string(),
   phone: yup.string(),
-  birthDate: yup.date("Nhập ngày tháng năm hợp lệ"),
+  birthDate: yup.string(),
 });
 
 function EditProfile() {
@@ -22,6 +22,8 @@ function EditProfile() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [avatar, setAvatar] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const {
     register,
@@ -32,12 +34,41 @@ function EditProfile() {
     resolver: yupResolver(schema),
   });
 
+  const handleImage = (e) => {
+    const selectFile = e.target.files[0];
+    console.log(selectFile.type);
+    const fileSizeInMB = selectFile.size / (1024 * 1024);
+    const typeImage = ["image/jpg", "image/jpeg", "image/png"];
+
+    if (!typeImage.includes(selectFile.type)) {
+      alert("Chỉ nhận file jpg, jpeg, png");
+    }
+
+    if (fileSizeInMB > 5) {
+      alert("Không up ảnh quá 5Mb");
+      return;
+    }
+
+    if (!selectFile) return;
+    setPreview(URL.createObjectURL(selectFile));
+  };
+
+  const cancelImage = () => {
+    setPreview(null);
+  };
+
+  useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
         const res = await userService.getOne(username);
-        console.log(res);
+        setAvatar(res.image);
         setValue("firstName", res.firstName);
         setValue("lastName", res.lastName);
         setValue("email", res.email);
@@ -56,11 +87,21 @@ function EditProfile() {
   }, [username, setValue]);
 
   const onSubmit = async (data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      console.log(key, value);
+      if (key === "image") {
+        formData.append(key, value[0]);
+      } else {
+        formData.append(key, value);
+      }
+    });
+
     try {
       setLoading(true);
-      await userService.update(username, data);
+      await userService.update(username, formData);
       alert("Cập nhật thành công!");
-      navigate(`/p/${username}`);
+      navigate(`/profile/${username}`);
     } catch (error) {
       console.log("Lỗi cập nhật:", error);
       alert("Cập nhật thất bại!");
@@ -100,6 +141,33 @@ function EditProfile() {
       <label>Ngày sinh:</label>
       <input type="date" {...register("birthDate")} />
       <p>{errors.birthDate?.message}</p>
+
+      <label>Avatar:</label>
+      <div>
+        <img
+          src={preview || avatar}
+          alt="Avatar"
+          style={{
+            width: 100,
+            height: 100,
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      </div>
+
+      <input
+        type="file"
+        accept="image/*"
+        {...register("image")}
+        onChange={handleImage}
+      />
+
+      {preview && (
+        <button type="button" onClick={cancelImage}>
+          Hủy bỏ ảnh mới
+        </button>
+      )}
 
       <button type="submit">{loading ? "Đang lưu..." : "Lưu thay đổi"}</button>
     </form>

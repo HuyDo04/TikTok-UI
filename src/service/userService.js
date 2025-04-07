@@ -1,21 +1,17 @@
 import * as httpRequest from "@/utils/httpRequest";
 
 export const getAll = async () => {
-    const response = await httpRequest.get("/users", {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-        }
-    })
-    return response
+    const response = await httpRequest.get("/users")
+    return response.data
 }
 
 export const getOne = async (username) => {
     const response = await httpRequest.get(`/users/${username}`); 
-    return response; 
+    return response.data; 
 };
 
 export const update = async (username, data) => {
-    const response = await httpRequest.patch(`/user/${username}`, data);
+    const response = await httpRequest.put(`/users/${username}`, data);
     return response
 }
 

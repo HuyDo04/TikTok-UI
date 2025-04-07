@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
 import Navigation from "./Navigation";
 import HandleLogout from "./HandleLogout";
+import Navbar from "@/component/NavBar";
 
 function Header() {
   return (
     <>
-      <Navigation />
+      <Navbar />
       <HandleLogout />
     </>
   );

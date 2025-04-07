@@ -34,7 +34,7 @@ function Button({
 
   const handleClick = () => {
     if (disabled || loading) return;
-    onClick();
+    // onClick();
   };
 
   return (

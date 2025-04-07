@@ -2,7 +2,7 @@ import * as httpRequest from "@/utils/httpRequest";
 
 export const getCurrentUser = async () => {
     const response = await httpRequest.get("/auth/me")
-    return response
+    return response.data
 }
 
 export const register = async ({ firstName, lastName, email, password, confirmPassword }) => {
@@ -16,11 +16,7 @@ export const register = async ({ firstName, lastName, email, password, confirmPa
   try {
       const response = await httpRequest.post("/auth/register", 
         requestData,
-        {
-        headers: {
-            "Content-Type" : "application/json"
-        },
-        })
+        )
     return response
   } catch (error) {
     // ? tránh lỗi response là undefined
@@ -35,13 +31,8 @@ export const login = async (email, password) => {
     }
    try {
      const response = await httpRequest.post("/auth/login", 
-        formData,
-        {
-        headers: {
-            "Content-Type" : "application/json"
-        }
-        })
-    return response
+        formData)
+    return response.data
    } catch (error) {
         throw error
    }
@@ -52,14 +43,9 @@ export const logout = async () => {
     if (!token) return
 
     try {
-        const response = await httpRequest.post("/auth/logout", null, { 
-             headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await httpRequest.post("/auth/logout");
         httpRequest.setToken(null);
-        return response;
+        return response.data;
     } catch (error) {
         console.error("Lỗi khi logout:", error);
         throw error.response?.data || error.message;
@@ -75,10 +61,24 @@ export const checkEmail = async (email) => {
     }
 }
 
+export const verifyToken = async (token) => {
+  try {
+    const response = await httpRequest.get('/auth/verify', {
+      headers: { 
+        Authorization: `Bearer ${token}` 
+      }
+    });
+    return response.data.isValid; 
+  } catch (error) {
+    return false;
+  }
+};
+
 export default {
     getCurrentUser,
     register,
     login,
     logout,
-    checkEmail
+    checkEmail,
+    verifyToken
 }

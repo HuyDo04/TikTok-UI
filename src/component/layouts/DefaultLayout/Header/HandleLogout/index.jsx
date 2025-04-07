@@ -1,9 +1,14 @@
 import { logout } from "@/service/authService";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import styles from "./HandleLogout.module.scss";
+import classNames from "classnames/bind";
+import useUser from "@/hooks/useUser";
+import UserContext from "@/context/UserContext";
+const cx = classNames.bind(styles);
 function HandleLogout() {
   const [login, setLogin] = useState(false);
+  const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -15,14 +20,22 @@ function HandleLogout() {
       await logout();
       alert("Logout Thành công");
       localStorage.removeItem("token");
-      setLogin(false);
+      setUser(null);
       navigate("/");
     } catch (error) {
       console.log(error);
     }
   };
 
-  return <>{login && <button onClick={handleLogout}>Logout</button>}</>;
+  return (
+    <>
+      {login && (
+        <button className={cx("subButton")} onClick={handleLogout}>
+          Logout
+        </button>
+      )}
+    </>
+  );
 }
 
 export default HandleLogout;

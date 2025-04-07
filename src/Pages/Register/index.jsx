@@ -1,15 +1,29 @@
-import { register } from "@/service/authService";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import authService, {
+  checkEmail,
+  register as registerAPI,
+} from "@/service/authService";
+import { NavLink, useNavigate } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import userSchema from "@/schema/userSchema";
+import InputText from "@/component/InputText";
 
+import styles from "./Register.module.scss";
+import classNames from "classnames/bind";
+const cx = classNames.bind(styles);
+let timer;
 function Register() {
-  const [fullname, setFullname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState({});
-
   const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    trigger,
+    setError,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(userSchema) });
 
   const getName = (fullname) => {
     const splitFullname = fullname
@@ -21,110 +35,96 @@ function Register() {
     return [firstName, lastName];
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrors({});
-
-    if (!fullname || !email || !password || !confirmPassword) {
-      setErrors({ prinfError: "Vui lòng điền đầy đủ thông tin." });
-      return;
-    }
-
-    const [firstName, lastName] = getName(fullname);
-
-    if (password !== confirmPassword) {
-      setErrors({ confirmPassword: "Mật khẩu xác nhận không đúng." });
-      return;
-    }
+  const onSubmit = async (data) => {
+    const [firstName, lastName] = getName(data.fullname);
 
     try {
-      const data = await register({
+      const res = await registerAPI({
         firstName,
         lastName,
-        email,
-        password,
-        confirmPassword,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
       });
-      if (data.errors) {
-        setErrors(data.error);
-        return;
-      }
+
       alert("Đăng ký thành công.");
-      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("token", res.access_token);
       navigate("/");
     } catch (error) {
       console.log(error);
-      const errorMessage = error.error || error.message || "";
-
-      if (error.errors) {
-        setErrors(error.errors);
-      } else if (errorMessage.includes("users_username_unique")) {
-        setErrors({
-          fullname: "Tên người dùng đã được sử dụng. Vui lòng chọn tên khác.",
-        });
-      } else if (
-        errorMessage.includes("users_email_unique") ||
-        errorMessage.includes("email")
-      ) {
-        setErrors({ email: "Email này đã được sử dụng." });
-      } else {
-        setErrors({ prinfError: "Có lỗi xảy ra. Vui lòng thử lại sau." });
-      }
     }
   };
 
+  const emailValue = watch("email");
+  useEffect(() => {
+    if (!emailValue) return;
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+      const isValid = await trigger("email");
+      if (isValid) {
+        const emailCheck = await authService.checkEmail(emailValue);
+        if (emailCheck) {
+          setError("email", {
+            type: "manual",
+            message: "Email này đã được sử dụng",
+          });
+        }
+      }
+    }, 400);
+  }, [emailValue, trigger, setError]);
+
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Họ và Tên:</label>
-          <input
-            type="text"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
-            required
+    <div className={cx("container")}>
+      <form onSubmit={handleSubmit(onSubmit)} className={cx("form")}>
+        <div className={cx("formGroup")}>
+          <label className={cx("label")}>Họ và Tên:</label>
+          <InputText
+            className={cx("input")}
+            name="fullname"
+            register={register}
+            message={errors.fullname?.message}
           />
         </div>
-
-        <div className="form-group">
-          <label>Email:</label>
-          <input
+        <div className={cx("formGroup")}>
+          <label className={cx("label")}>Email:</label>
+          <InputText
+            className={cx("input")}
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            name="email"
+            register={register}
+            message={errors.email?.message}
           />
         </div>
-
-        <div className="form-group">
-          <label>Mật khẩu:</label>
-          <input
+        <div className={cx("formGroup")}>
+          <label className={cx("label")}>Mật khẩu:</label>
+          <InputText
+            className={cx("input")}
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            name="password"
+            register={register}
+            message={errors.password?.message}
           />
         </div>
-
-        <div className="form-group">
-          <label>Nhập lại mật khẩu:</label>
-          <input
+        <div className={cx("formGroup")}>
+          <label className={cx("label")}>Nhập lại mật khẩu:</label>
+          <InputText
+            className={cx("input")}
             type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
+            name="confirmPassword"
+            register={register}
+            message={errors.confirmPassword?.message}
           />
         </div>
-        <button type="submit">Đăng ký</button>
-        {errors.prinfError && <p>{errors.prinfError}</p>}
-        {errors.fullname && <p className="error">{errors.fullname}</p>}
-        {errors.email && <p className="error">{errors.email}</p>}
-        {errors.password && <p className="error">{errors.password}</p>}
-        {errors.confirmPassword && (
-          <p className="error">{errors.confirmPassword}</p>
-        )}
+        <div className={cx("Button")}>
+          <button type="submit" className={cx("subButton")}>
+            Đăng ký
+          </button>
+        </div>
+        <div className={cx("registerLink")}>
+          <NavLink to="/login">Bạn đã có tài khoản? Đăng nhập ngay</NavLink>
+        </div>
       </form>
-    </>
+    </div>
   );
 }
 

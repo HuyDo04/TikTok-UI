@@ -8,9 +8,9 @@ function InputText({
 }) {
   return (
     <>
-      <input type={type} {...register(name)} />
+      <input type={type} {...register(name)} className={styles.input} />
       <br />
-      {message && <span className={styles.error}>{message}</span>}
+      {message && <span className={`${styles.error}`}>{message}</span>}
       <br />
     </>
   );

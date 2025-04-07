@@ -1,3 +1,44 @@
-.btnHome {
-    margin: 12px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f8f8f8;
+    color: #161823;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    background-color: #f1f1f2;
+}
+
+.video-feed {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.video-feed::-webkit-scrollbar {
+    width: 6px;
+}
+
+.video-feed::-webkit-scrollbar-thumb {
+    background-color: rgba(22, 24, 35, 0.2);
+    border-radius: 3px;
 }

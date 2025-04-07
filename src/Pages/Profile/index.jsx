@@ -36,6 +36,8 @@ function Profile() {
       <p>Tuổi: {profile.age || "Chưa cập nhật"}</p>
       <p>Số điện thoại: {profile.phone || "Chưa cập nhật"}</p>
       <p>Ngày sinh: {profile.birthDate || "Chưa cập nhật"}</p>
+      <p>Avatar</p>
+      <img src={profile.image || "Avatar"} alt="" width={200} />
       <p>
         Trạng thái:{" "}
         {profile.emailVerifiedAt
