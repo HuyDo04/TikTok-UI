@@ -2,7 +2,7 @@ import * as httpRequest from "@/utils/httpRequest";
 
 export const getCurrentUser = async () => {
     const response = await httpRequest.get("/auth/me")
-    return response
+    return response.data
 }
 
 export const register = async ({ firstName, lastName, email, password, confirmPassword }) => {
@@ -59,6 +59,7 @@ export const checkEmail = async (email) => {
         const res = await httpRequest.get(`/auth/check-email?email=${email}`)
         return res.data.exists
     } catch (error) {
+        console.error("Lỗi check email:", error);
         return false
     }
 }
@@ -69,24 +70,28 @@ export const checkEmailUpdate = async (email, id) => {
         console.log(res.data.exists)
         return res.data.exists
     } catch (error) {
+        console.error("Lỗi check email:", error);
         return false
     }
 }
 
-export const checkPhone = async (phone) => {
+export const checkPhone = async (phone,id) => {
     try {
         const res = await httpRequest.get(`/auth/check-phone?phone=${phone}&exclude_id=${id}`)
         return res.data.exists
     } catch (error) {
+        console.error("Lỗi check phone:", error);
+
         return false
     }
 }
 
-export const CheckUsername = async (username) => {
+export const CheckUsername = async (username,id) => {
     try {
         const res = await httpRequest.get(`/auth/check-phone?phone=${username}&exclude_id=${id}`)
         return res.data.exists
     } catch (error) {
+        console.error("Lỗi check username:", error);
         return false
     }
 }

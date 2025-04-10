@@ -1,4 +1,3 @@
-import config from "@/config";
 import userService from "@/service/userService";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";

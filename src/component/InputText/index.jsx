@@ -1,14 +1,9 @@
 import PropTypes from "prop-types";
 import styles from "./InputText.module.scss";
-function InputText({
-  type = "text",
-  name,
-  register = () => ({}),
-  message = "",
-}) {
+function InputText({ type = "text", name, register, message = "" }) {
   return (
     <>
-      <input type={type} {...register(name)} className={styles.input} />
+      <input type={type} name={name} {...register} className={styles.input} />
       <br />
       {message && <span className={`${styles.error}`}>{message}</span>}
       <br />
@@ -19,7 +14,7 @@ function InputText({
 InputText.protoTypes = {
   name: PropTypes.string,
   message: PropTypes.string,
-  register: PropTypes.func,
+  register: PropTypes.object,
 };
 
 export default InputText;

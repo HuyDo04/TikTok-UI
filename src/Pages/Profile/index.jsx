@@ -19,8 +19,8 @@ function Profile() {
 
   useEffect(() => {
     async function handle() {
-      const response = await authService.getCurrentUser();
-      setCurrentUser(response.data);
+      const data = await authService.getCurrentUser();
+      setCurrentUser(data);
     }
     handle();
   }, []);

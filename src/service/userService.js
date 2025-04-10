@@ -1,13 +1,11 @@
 import * as httpRequest from "@/utils/httpRequest";
 
 export const getAll = async () => {
-    console.log("123")
     const response = await httpRequest.get("/users", {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
     });
-    console.log(getAll)
     return response;
 };
 

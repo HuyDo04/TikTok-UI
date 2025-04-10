@@ -5,21 +5,19 @@ import classNames from "classnames/bind";
 import Button from "../Button";
 import { NavLink } from "react-router-dom";
 import HandleLogout from "../layouts/DefaultLayout/Header/HandleLogout";
-import { useContext, useEffect, useState } from "react";
-import authService from "@/service/authService";
-import useUser from "@/hooks/useUser";
+import { useContext } from "react";
 import UserContext from "@/context/UserContext";
 const cx = classNames.bind(styles);
 
 function Sidebar() {
-  // const { user, loading } = useContext(UserContext);
-  // if (loading) return;
-  // console.log(user);
+  const { user, loading } = useContext(UserContext);
+  console.log(user);
+  if (loading) return;
   return (
     <div className={cx("sidebar")}>
       <div className={cx("sidebar-item")}>
         <FaHome />
-        <span>Dành cho bạn</span>
+        <span>Đề xuất</span>
       </div>
       <div className={cx("sidebar-item")}>
         <FaCompass />
@@ -33,18 +31,19 @@ function Sidebar() {
         <FaUserFriends />
         <span>Đang follow</span>
       </div>
-
-      <div className={cx("sidebar-item")}>
-        <NavLink to="/login">
-          <Button primary size="medium">
-            Login
-          </Button>
-        </NavLink>
-      </div>
-
-      <div className={cx("sidebar-item")}>
-        <HandleLogout />
-      </div>
+      {!user ? (
+        <div className={cx("sidebar-item")}>
+          <NavLink to="/login">
+            <Button primary size="medium">
+              Login
+            </Button>
+          </NavLink>
+        </div>
+      ) : (
+        <div className={cx("sidebar-item")}>
+          <HandleLogout />
+        </div>
+      )}
     </div>
   );
 }

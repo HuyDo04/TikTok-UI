@@ -2,10 +2,18 @@ import axios from "axios";
 
 const httpRequest = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
-    headers : {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-    }
+  
 })
+
+httpRequest.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+    } else {
+        delete config.headers["Authorization"];
+    }
+    return config;
+});
 
 const send = async (method, url, data, config) => {
     const isPutOrPatch = ["put", "patch"].includes(method.toLowerCase());
@@ -51,7 +59,7 @@ export const del = (url,config) => {
 
 export const setToken = (token) => {
   if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    httpRequest.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     localStorage.setItem("token", token);
   } else {
     localStorage.removeItem("token");

@@ -3,24 +3,28 @@ import config from "@/config";
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import authService from "@/service/authService";
+import { useLoading } from "@/hooks/useLoading";
 
 function ProtectedRoute({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   const location = useLocation();
+  const { loading, setLoading } = useLoading();
+
   useEffect(() => {
     setLoading(true);
     (async () => {
       try {
         const data = await authService.getCurrentUser();
-        setCurrentUser(data.data);
-        setLoading(false);
+        console.log(data);
+        setCurrentUser(data);
       } catch (error) {
+        console.log(error);
+        setCurrentUser(null);
+      } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [setLoading]);
 
   if (loading) {
     return <div>Loading.............</div>;
@@ -35,6 +39,7 @@ function ProtectedRoute({ children }) {
     );
   }
 
+  // Nếu có currentUser, render children
   return children;
 }
 

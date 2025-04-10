@@ -11,15 +11,19 @@ function Navbar() {
   return (
     <nav className={cx("navbar")}>
       <div className={cx("logo")}>
-        <BsTiktok className={cx("tiktok-icon")} />
-        <span>TikTok</span>
+        <NavLink to="/">
+          <BsTiktok className={cx("tiktok-icon")} />
+          <span>TikTok</span>
+        </NavLink>
       </div>
+
       <div className={cx("search-bar")}>
         <input type="text" placeholder="Tìm kiếm" />
         <button>
           <FaSearch />
         </button>
       </div>
+
       <div className={cx("nav-buttons")}>
         <button className={cx("upload-btn")}>
           <FaPlus />

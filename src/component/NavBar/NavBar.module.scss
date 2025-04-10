@@ -13,6 +13,11 @@
     z-index: 1000;
 }
 
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
 /* Logo */
 .logo {
     display: flex;

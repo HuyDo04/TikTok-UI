@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import authService, {
-  checkEmail,
-  register as registerAPI,
-} from "@/service/authService";
+import authService, { register as registerAPI } from "@/service/authService";
 import { NavLink, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import userSchema from "@/schema/userSchema";
@@ -11,8 +8,8 @@ import InputText from "@/component/InputText";
 
 import styles from "./Register.module.scss";
 import classNames from "classnames/bind";
+import useDebounce from "@/hooks/useBounce";
 const cx = classNames.bind(styles);
-let timer;
 function Register() {
   const navigate = useNavigate();
 
@@ -56,10 +53,10 @@ function Register() {
   };
 
   const emailValue = watch("email");
+  const debouncedEmail = useDebounce(emailValue, 400);
   useEffect(() => {
-    if (!emailValue) return;
-    clearTimeout(timer);
-    timer = setTimeout(async () => {
+    if (!debouncedEmail) return;
+    const validateEmail = async () => {
       const isValid = await trigger("email");
       if (isValid) {
         const emailCheck = await authService.checkEmail(emailValue);
@@ -70,8 +67,9 @@ function Register() {
           });
         }
       }
-    }, 400);
-  }, [emailValue, trigger, setError]);
+    };
+    validateEmail();
+  }, [emailValue, trigger, setError, debouncedEmail]);
 
   return (
     <div className={cx("container")}>

@@ -7,8 +7,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import InputText from "@/component/InputText";
 import authService from "@/service/authService";
 import useDebounce from "@/hooks/useBounce";
+import { useLoading } from "@/hooks/useLoading";
 
-let timer;
 const schema = yup.object({
   firstName: yup.string().required("Họ không được để trống"),
   lastName: yup.string().required("Tên không được để trống"),
@@ -19,38 +19,41 @@ const schema = yup.object({
   gender: yup.string(),
   phone: yup.string(),
   birthDate: yup.string(),
-  emailVerifiedAt: yup.string(),
+  username: yup.string(),
 });
 
 function EditProfile() {
   const { username } = useParams();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [formError, setFormError] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [preview, setPreview] = useState(null);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  console.log(currentUser);
+  const { loading, setLoading } = useLoading();
+
   const {
     register,
     handleSubmit,
     setValue,
     watch,
     trigger,
-    getValues,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
   const handleImage = (e) => {
-    const selectFile = e.target.files[0];
-    const fileSizeInMB = selectFile.size / (1024 * 1024);
-    const typeImage = ["image/jpg", "image/jpeg", "image/png"];
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    if (!typeImage.includes(selectFile.type)) {
+    const typeImage = ["image/jpg", "image/jpeg", "image/png"];
+    const fileSizeInMB = file.size / (1024 * 1024);
+
+    if (!typeImage.includes(file.type)) {
       alert("Chỉ nhận file jpg, jpeg, png");
+      return;
     }
 
     if (fileSizeInMB > 5) {
@@ -58,47 +61,45 @@ function EditProfile() {
       return;
     }
 
-    if (!selectFile) return;
-    setPreview(URL.createObjectURL(selectFile));
+    setPreview(URL.createObjectURL(file));
+    setAvatar(file);
   };
 
   const cancelImage = () => {
     setPreview(null);
+    setAvatar(null);
   };
 
   useEffect(() => {
     return () => {
-      URL.revokeObjectURL(preview);
+      preview && URL.revokeObjectURL(preview);
     };
   }, [preview]);
 
-  // currentUser
-  useEffect(() => {
-    const fetchUser = async () => {
-      const data = await authService.getCurrentUser();
-      console.log(data);
-      setCurrentUser(data.data);
-    };
-    fetchUser();
-  }, []);
-
-  // setValue form
   useEffect(() => {
     const fetchUserData = async () => {
+      setLoading(true);
       try {
+        const data = await authService.getCurrentUser();
+        setCurrentUser(data);
+
         const res = await userService.getOne(username);
         setAvatar(res.data.image);
-        setValue("firstName", res.data.firstName);
-        setValue("lastName", res.data.lastName);
-        setValue("email", res.data.email);
-        setValue("gender", res.data.gender);
-        setValue("phone", res.data.phone);
-        setValue("birthDate", res.data.birthDate);
-        setValue("Trạng thái", res.data.emailVerifiedAt);
+
+        // Gán các giá trị vào form
+        [
+          "firstName",
+          "lastName",
+          "email",
+          "gender",
+          "phone",
+          "birthDate",
+          "username",
+        ].forEach((key) => setValue(key, res.data[key] || ""));
+
         setIsUserLoaded(true);
-        setLoading(true);
       } catch (err) {
-        setError("Không thể tải thông tin người dùng");
+        setFormError("Không thể tải thông tin người dùng");
         console.error(err);
       } finally {
         setLoading(false);
@@ -106,29 +107,23 @@ function EditProfile() {
     };
 
     fetchUserData();
-  }, [username, setValue]);
+  }, [username, setValue, setLoading]);
 
-  const emailValue = watch("email");
-  const phoneValue = watch("phone");
-  const usernameValue = watch("username");
+  const debouncedEmail = useDebounce(watch("email"), 400);
+  const debouncedPhone = useDebounce(watch("phone"), 400);
+  const debouncedUsername = useDebounce(watch("username"), 400);
 
-  const debouncedEmail = useDebounce(emailValue, 400);
-  const debouncedPhone = useDebounce(phoneValue, 400);
-  const debouncedUsername = useDebounce(usernameValue, 400);
-
-  // Check Email
+  // mail
   useEffect(() => {
-    if (!debouncedEmail || !isUserLoaded) return;
-
-    const validateEmail = async () => {
+    if (!debouncedEmail || !isUserLoaded || !currentUser) return;
+    const checkEmail = async () => {
       const isValid = await trigger("email");
-      const currentEmail = getValues("email");
       if (isValid) {
-        const emailCheck = await authService.checkEmailUpdate(
-          currentEmail,
+        const exists = await authService.checkEmailUpdate(
+          debouncedEmail,
           currentUser.id
         );
-        if (emailCheck) {
+        if (exists) {
           setError("email", {
             type: "manual",
             message: "Email này đã được sử dụng",
@@ -137,44 +132,43 @@ function EditProfile() {
       }
     };
 
-    validateEmail();
-  }, [debouncedEmail, trigger, setError, isUserLoaded]);
+    checkEmail();
+  }, [debouncedEmail, trigger, setError, isUserLoaded, currentUser]);
 
-  // Check Phone
+  // phone
   useEffect(() => {
-    if (!debouncedPhone) return;
+    if (!debouncedPhone || !currentUser) return;
 
-    const validatePhone = async () => {
+    const checkPhone = async () => {
       const isValid = await trigger("phone");
       if (isValid) {
-        const phoneCheck = await authService.checkPhone(
+        const exists = await authService.checkPhone(
           debouncedPhone,
           currentUser.id
         );
-        if (phoneCheck) {
+        if (exists) {
           setError("phone", {
             type: "manual",
-            message: "Phone này đã được sử dụng",
+            message: "Số điện thoại đã được sử dụng",
           });
         }
       }
     };
 
-    validatePhone();
-  }, [debouncedPhone, trigger, setError]);
+    checkPhone();
+  }, [debouncedPhone, trigger, setError, currentUser]);
 
-  // Check Username
+  // username
   useEffect(() => {
-    if (!debouncedUsername || !isUserLoaded) return;
-
-    const validateUsername = async () => {
+    if (!debouncedUsername || !isUserLoaded || !currentUser) return;
+    const checkUsername = async () => {
       const isValid = await trigger("username");
       if (isValid) {
-        const usernameCheck = await authService.CheckUsername(
+        const exists = await authService.CheckUsername(
           debouncedUsername,
           currentUser.id
         );
-        if (usernameCheck) {
+        if (exists) {
           setError("username", {
             type: "manual",
             message: "Username này đã được sử dụng",
@@ -183,16 +177,19 @@ function EditProfile() {
       }
     };
 
-    validateUsername();
-  }, [debouncedUsername, trigger, setError, isUserLoaded]);
-  //submit
+    checkUsername();
+  }, [debouncedUsername, trigger, setError, isUserLoaded, currentUser]);
+
+  // submit
   const onSubmit = async (data) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
-      if (key === "image") {
-        formData.append(key, value[0]);
-      } else {
-        formData.append(key, value);
+      if (value !== "" && value !== null) {
+        if (key === "image" && avatar instanceof File) {
+          formData.append("image", avatar);
+        } else {
+          formData.append(key, value);
+        }
       }
     });
 
@@ -210,60 +207,66 @@ function EditProfile() {
   };
 
   if (loading) return <p>Đang tải...</p>;
-  if (error) return <p>{error}</p>;
+  if (formError) return <p>{formError}</p>;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <label htmlFor="">Họ</label>
+      <label>Họ</label>
       <InputText
         type="text"
         name="firstName"
         register={register}
         message={errors.firstName?.message}
       />
-      <label htmlFor="">Tên</label>
+
+      <label>Tên</label>
       <InputText
         type="text"
         name="lastName"
         register={register}
         message={errors.lastName?.message}
       />
-      <label htmlFor="">Email</label>
+
+      <label>Email</label>
       <InputText
         type="email"
         name="email"
         register={register}
         message={errors.email?.message}
       />
-      <label>Giới tính:</label>
+
+      <label>Giới tính</label>
       <select {...register("gender")}>
         <option value="">Chưa cập nhật</option>
         <option value="male">Nam</option>
         <option value="female">Nữ</option>
       </select>
-      <label htmlFor="">Số điện thoại</label>
+
+      <label>Số điện thoại</label>
       <InputText
-        type="phone"
+        type="text"
         name="phone"
         register={register}
         message={errors.phone?.message}
       />
-      <label htmlFor="">Ngày sinh</label>
+
+      <label>Ngày sinh</label>
       <InputText
         type="date"
         name="birthDate"
         register={register}
         message={errors.birthDate?.message}
       />
-      <label htmlFor="">Trạng thái</label>
+
+      <label>Username</label>
       <InputText
         type="text"
-        name="emailVerifiedAt"
+        name="username"
         register={register}
-        message={errors.emailVerifiedAt?.message}
+        message={errors.username?.message}
       />
 
-      <label>Avatar:</label>
+      <label>Avatar</label>
       <div>
         <img
           src={preview || avatar}
@@ -287,6 +290,7 @@ function EditProfile() {
           Hủy bỏ ảnh mới
         </button>
       )}
+
       <button type="submit">{loading ? "Đang lưu..." : "Lưu thay đổi"}</button>
     </form>
   );
