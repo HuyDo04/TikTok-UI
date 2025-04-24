@@ -2,7 +2,7 @@ import { FaSearch, FaPlus, FaInbox, FaUser } from "react-icons/fa";
 import { BsTiktok } from "react-icons/bs";
 import styles from "./NavBar.module.scss";
 import classNames from "classnames/bind";
-import HandleLogout from "../layouts/DefaultLayout/Header/HandleLogout";
+import HandleLogout from "../HandleLogout";
 import { NavLink } from "react-router-dom";
 
 const cx = classNames.bind(styles);

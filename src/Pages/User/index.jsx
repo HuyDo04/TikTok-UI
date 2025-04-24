@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 
 function User() {
   const [users, setUser] = useState([]);
+  console.log(users);
+
   useEffect(() => {
     (async () => {
       const user = await userService.getAll();

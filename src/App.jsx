@@ -1,9 +1,14 @@
-import { useState } from "react";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { Router } from "react-router-dom";
 import AppRoutes from "./component/AppRoutes";
+import UserProvider from "./component/UserProvider";
 
 function App() {
-  return <AppRoutes />;
+  return (
+    <div>
+      <AppRoutes />
+      <UserProvider />
+    </div>
+  );
 }
 
 export default App;

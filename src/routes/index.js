@@ -9,16 +9,34 @@ import User from "../Pages/User";
 import NoHeaderLayout from "@/component/layouts/NoHeaderLayout";
 import Profile from "@/Pages/Profile";
 import Edit from "@/Pages/Edit";
+import Explore from "@/Pages/Explore";
+import DefaultLayout from "@/component/layouts/DefaultLayout";
+import Products from "@/Pages/Products";
+import ProductDetail from "@/Pages/ProductDetail";
 
 const routes = [
     {
         path: config.routes.home,
-        component: Home
+        component: Home,
+        layout: DefaultLayout
     },
+
+     {
+        path: config.routes.products,
+        component: Products,
+        layout: AdminLayout
+    },
+    {
+        path: config.routes.productDetail,
+        component: ProductDetail,
+        layout: AdminLayout
+    },
+
     {   
         path: config.routes.user,
         component: User,
-        protected: true
+        protected: true,
+        layout: NoHeaderLayout
     },
    
     {   
@@ -41,6 +59,10 @@ const routes = [
         path: config.routes.edit,
         component: Edit,
         layout: NoHeaderLayout
+    },
+    {
+        path: config.routes.explore,
+        component: Explore,
     },
     {
         path: config.routes.notFound,

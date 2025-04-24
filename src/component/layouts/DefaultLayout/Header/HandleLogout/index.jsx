@@ -3,7 +3,6 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./HandleLogout.module.scss";
 import classNames from "classnames/bind";
-import useUser from "@/hooks/useUser";
 import UserContext from "@/context/UserContext";
 const cx = classNames.bind(styles);
 function HandleLogout() {
@@ -13,7 +12,7 @@ function HandleLogout() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     setLogin(!!token);
-  });
+  }, []);
 
   const handleLogout = async () => {
     try {

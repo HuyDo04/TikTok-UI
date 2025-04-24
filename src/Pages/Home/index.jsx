@@ -1,15 +1,23 @@
-import Navbar from "@/component/NavBar";
 import Sidebar from "@/component/Sidebar";
-import SuggestedAccounts from "@/component/SuggestedAccounts";
 import VideoCard from "@/component/VideoCard";
-import { useState, useEffect } from "react";
 import classNames from "classnames/bind";
 
 import styles from "./Home.module.scss";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentUser } from "@/features/auth/authAsync";
 const cx = classNames.bind(styles);
 
 function Home() {
-  const [videos, setVideos] = useState([
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getCurrentUser());
+  }, [dispatch]);
+
+  const user = useSelector((state) => state.auth.currentUser);
+
+  const videos = [
     {
       id: 1,
       videoUrl:
@@ -30,14 +38,14 @@ function Home() {
       caption: "Video thứ hai nè!",
       thumbnail: "https://picsum.photos/200/300",
     },
-  ]);
+  ];
 
   return (
     <div className={cx("app")}>
-      <Navbar />
       <div className={cx("main-content")}>
         <Sidebar />
         <div className={cx("video-feed")}>
+          {user ? <h1>Xin chào {user.firstName} </h1> : ""}
           {videos.map((video) => (
             <VideoCard key={video.id} video={video} />
           ))}

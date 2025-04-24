@@ -1,6 +1,11 @@
 const config = {
     routes : {
         home : "/",
+
+        // products
+        products : "/products",
+        productDetail: "/products/:slug",
+
         //auth
         login : "/login",
         register : "/register",
@@ -8,7 +13,10 @@ const config = {
         profile:"/profile/:username",
         edit:"/profile/:username/edit",
         user: "/users",
-        notFound:"*"
+        notFound:"*",
+
+        // pages
+        explore:"/explore",
     }
 }
 

@@ -1,14 +1,11 @@
 import { Outlet } from "react-router-dom";
-import Footer from "./Footer";
-import Header from "./Header";
+import Sidebar from "@/component/Sidebar";
 
 function DefaultLayout() {
   return (
     <>
-      <Header />
-      <h1>DefaultLayout</h1>
+      <Sidebar />
       <Outlet />
-      <Footer />
     </>
   );
 }

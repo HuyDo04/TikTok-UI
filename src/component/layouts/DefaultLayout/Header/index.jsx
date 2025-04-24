@@ -1,13 +1,9 @@
-import { NavLink } from "react-router-dom";
-import Navigation from "./Navigation";
-import HandleLogout from "./HandleLogout";
-import Navbar from "@/component/NavBar";
+import Navbar from "@/component/layouts/DefaultLayout/Header/NavBar";
 
 function Header() {
   return (
     <>
       <Navbar />
-      <HandleLogout />
     </>
   );
 }

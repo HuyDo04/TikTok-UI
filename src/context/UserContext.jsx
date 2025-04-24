@@ -1,25 +1,29 @@
-import authService from "@/service/authService";
 import PropTypes from "prop-types";
-import { Children, createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import authService from "@/service/authService";
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const UserContext = createContext();
+const UserContext = createContext();
+UserContext.displayName = "UserContext";
+
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  console.log(user);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    setLoading(true);
     const fetchUser = async () => {
+      setLoading(true);
       try {
         const data = await authService.getCurrentUser();
-        setUser(data);
+        if (data) {
+          setUser(data);
+        }
       } catch (error) {
-        console.log(error);
+        console.error("Failed to fetch user:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchUser();
   }, []);
 
@@ -28,11 +32,12 @@ export const UserProvider = ({ children }) => {
     loading,
     setUser,
   };
+
   return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
 };
 
-UserContext.propTypes = {
-  children: PropTypes.element,
+UserProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export default UserContext;
